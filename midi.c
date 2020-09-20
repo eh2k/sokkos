@@ -49,7 +49,6 @@ uint8_t midion_noaccent_velocity = 100;
 uint8_t midi_out_addr;  // store this in EEPROM
 uint8_t midi_in_addr;   // store this in EEPROM, too!
 
-extern volatile uint8_t dinsync_counter;
 extern volatile int16_t dinsync_clock_timeout;
 
 uint8_t midi_running_status = 0;  // suck!
@@ -78,7 +77,7 @@ SIGNAL(SIG_USART0_RECV) {
 
     // raise dinsync clk immediately, and also sched. to drop clock
     // (MIDISYNC -> DINSYNC conversion);
-    if (sync == MIDI_SYNC) {
+    if (sync == MIDI_SYNC ) {
       sbi(DINSYNC_PORT, DINSYNC_CLK); // rising edge on note start
       dinsync_clock_timeout = 5;      // in 5ms drop the edge, is this enough?
     }
@@ -166,16 +165,6 @@ void do_midi_mode(void) {
       if (c >> 7) {       // if the top bit is high, this is a command
 	if ((c >> 4 == 0xF) ||    // universal cmd, no addressing
 	    ((c & 0xF) == midi_in_addr)) {  // matches our addr
-        switch(c) {
-          case MIDI_START:
-          { 
-            dinsync_counter = 0;
-            dinsync_start();
-            break;}
-          case MIDI_STOP:
-          { dinsync_stop();
-            break;}
-        }
 	  midi_running_status = c >> 4;
 	} else {
 	  // not for us, continue!
@@ -225,7 +214,6 @@ void do_midi_mode(void) {
 	  
 	  break;
 	} 
-
       case MIDI_PITCHBEND:
 	{
 	  //putstring("MIDI Slide\n\r");

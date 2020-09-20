@@ -606,7 +606,7 @@ int main(void) {
 //      break;
     case MIDI_CONTROL_FUNC:
       //putstring("MIDIControl\n\r");
-      sync = MIDI_SYNC;
+      sync = INTERNAL_SYNC;
       do_midi_mode();
       break;
     case KEYBOARD_MODE_FUNC:
